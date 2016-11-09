@@ -3,6 +3,7 @@ from mongoengine import Document, StringField, IntField, ListField, DateTimeFiel
 
 class Blocks(Document):
     totalDifficulty = IntField(required=True)
+    mixHash = StringField(required=False)
     miner = StringField(required=True)
     gasUsed = IntField(required=True)
     logsBloom = StringField(required=True)
@@ -14,7 +15,8 @@ class Blocks(Document):
     number = IntField(required=True, unique=True)
     transactionsRoot = StringField(required=True)
     timestamp = IntField(required=True)
-    receiptRoot = StringField(required=True)
+    receiptRoot = StringField(required=False)
+    receiptsRoot = StringField(required=False)
     parentHash = StringField(required=True)
     transactions = ListField(null=True)
     nonce = StringField(required=True)
