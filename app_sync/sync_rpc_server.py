@@ -20,6 +20,7 @@ def sync_block_and_txs(web3, block):
     block_data = web3.eth.getBlock(block)
     block = Blocks(**block_data)
     block.created = timestamp_to_utc_datetime(block_data['timestamp'])
+    # TODO log exc
     block.save()
     for tx_hash in block.transactions:
         tx_data = web3.eth.getTransaction(tx_hash)
@@ -27,6 +28,7 @@ def sync_block_and_txs(web3, block):
         tx_data['toAddress'] = tx_data.pop('to')
         tx = Transactions(**tx_data)
         tx.block = block.id
+        # TODO log exc
         tx.save()
 
 
