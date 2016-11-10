@@ -35,7 +35,7 @@ class Blocks(Document):
 
 class Transactions(Document):
     fromAddress = StringField(required=True)
-    toAddress = StringField(required=True)
+    toAddress = StringField(required=False, null=True)
     input = StringField(required=True)
     blockHash = StringField(required=True)
     hash = StringField(required=True)
