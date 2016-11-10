@@ -32,16 +32,9 @@ def add_block_to_mongo(web3, block_data):
         tx.save()
 
 
-def sync_block_and_txs(block, web3=None):
-    if not web3:
-        web3 = RpcServerConnector().get_connection()
-    if isinstance(block, str):
-        if Blocks.objects(hash=block).count():
-            return
-    elif isinstance(block, int):
-        if Blocks.objects(number=block).count():
-            return
-
+def sync_block_and_txs(block, web3):
+    if Blocks.objects(number=block).count():
+        return
     try:
         block_data = web3.eth.getBlock(block)
     except AttributeError:
