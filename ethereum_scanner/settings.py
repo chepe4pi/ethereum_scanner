@@ -134,7 +134,8 @@ CONSTANCE_CONFIG = {
     'RPC_SERVER_IPC_PATH': ('/home/che/.ethereum/geth.ipc', 'path to ethereum rpc file'),
     'SYNC_BLOCKS_POSITION': (0, 'how many block we synced from first one'),
     'MONGO_DATABASE_NAME': ('ethereum_scan', 'name of mongo db'),
-    'MONGO_TEST_DATABASE_NAME': ('test_db', 'name of mongo test db')
+    'MONGO_TEST_DATABASE_NAME': ('test_db', 'name of mongo test db'),
+    'TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS': (10, 'in seconds')
 }
 
 from raven import fetch_git_sha

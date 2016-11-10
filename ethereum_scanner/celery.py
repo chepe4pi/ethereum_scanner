@@ -31,7 +31,7 @@ def set_web3_filter_task(self):
             current_block += 1
             config.SYNC_BLOCKS_POSITION = current_block
         connect(config.MONGO_DATABASE_NAME)
-        time.sleep(10)
+        time.sleep(config.TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS)
 
 
 set_web3_filter_task.delay()
