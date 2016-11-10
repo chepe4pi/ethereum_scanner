@@ -8,21 +8,8 @@ class Command(BaseCommand):
     help = 'Sync local database with blockchain'
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--block-start',
-            action='store_true',
-            dest='block-start',
-            default=270675,
-            help='Number of block to start sync',
-        )
-
-        parser.add_argument(
-            '--block-end',
-            action='store_true',
-            dest='block-end',
-            default=270775,
-            help='Number of block to end sync',
-        )
+        parser.add_argument('block-start', nargs='+', type=int)
+        parser.add_argument('block-end', nargs='+', type=int)
 
     # TODO logger - synced
     def handle(self, *args, **options):
@@ -31,8 +18,8 @@ class Command(BaseCommand):
             raise CommandError('Unable to make %s' % web3.currentProvider)
         del web3
 
-        end_block = options['block-end']
-        start_block = options['block-start']
+        end_block = options['block-end'][0]
+        start_block = options['block-start'][0]
 
         sync_blocks(start_block, end_block)
 
