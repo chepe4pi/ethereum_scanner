@@ -4,6 +4,7 @@ import time
 
 from constance import config
 from mongoengine import connect
+from mongoengine.connection import disconnect
 
 from app_core.celery_raven_class import RavenCelery
 from app_core.connectors import RpcServerConnector
@@ -30,13 +31,10 @@ def set_web3_filter_task(self):
             sync_block_and_txs(current_block, web3)
             current_block += 1
             config.SYNC_BLOCKS_POSITION = current_block
-        connect(config.MONGO_DATABASE_NAME)
+        disconnect(config.MONGO_DATABASE_NAME)
         time.sleep(config.TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS)
 
 
-set_web3_filter_task.delay()
-
 if __name__ == '__main__':
     app.start()
-# print('a')
-#     debug_task()
+    set_web3_filter_task.delay()
