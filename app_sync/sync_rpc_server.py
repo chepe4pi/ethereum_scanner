@@ -17,7 +17,10 @@ THREAD_POOL = ThreadPoolExecutor(threads_count)
 def sync_block_and_txs(web3, block):
     if Blocks.objects(number=block).count():
         return
-    block_data = web3.eth.getBlock(block)
+    try:
+        block_data = web3.eth.getBlock(block)
+    except AttributeError:
+        raise ValueError('block {} does not exist'.format(block))
     block = Blocks(**block_data)
     block.created = timestamp_to_utc_datetime(block_data['timestamp'])
     # TODO log exc
@@ -55,7 +58,7 @@ def sync_blocks(start_block, end_block):
             sync_position = sync_blocks[-1] + 1
         loop.close()
 
-        # test sync speed result
-        # web3 = RpcServerConnector('127.0.0.1', 8545).get_connection()
+#        # test sync speed result
+        # web3 = RpcServerConnector().get_connection()
         # for block in range(start_block, end_block):
         #     sync_block_and_txs(web3, block)

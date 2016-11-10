@@ -12,7 +12,7 @@ class Command(BaseCommand):
             '--block-start',
             action='store_true',
             dest='block-start',
-            default=300,
+            default=270675,
             help='Number of block to start sync',
         )
 
@@ -20,7 +20,7 @@ class Command(BaseCommand):
             '--block-end',
             action='store_true',
             dest='block-end',
-            default=10310,
+            default=270775,
             help='Number of block to end sync',
         )
 

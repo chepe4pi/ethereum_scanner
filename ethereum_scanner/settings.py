@@ -127,5 +127,7 @@ STATIC_URL = '/static/'
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'RPC_SERVER_HOST': ('52.16.72.86', 'rpc server host'),
-    'RPC_SERVER_PORT': ('8545', 'rpc server port'),
+    'RPC_SERVER_PROTOCOL': ('IPC', 'IPC or HTTP'),
+    'RPC_SERVER_HTTP_PORT': ('8545', 'rpc server port'),
+    'RPC_SERVER_IPC_PATH': ('/home/che/.ethereum/geth.ipc', 'path to ethereum rpc file'),
 }

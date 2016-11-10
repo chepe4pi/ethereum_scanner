@@ -1,7 +1,8 @@
-from mongoengine import Document, StringField, IntField, ListField, DateTimeField, ObjectIdField, FloatField
+from mongoengine import StringField, IntField, ListField, DateTimeField, ObjectIdField, FloatField, \
+    DynamicDocument
 
 
-class Blocks(Document):
+class Blocks(DynamicDocument):
     totalDifficulty = IntField(required=True)
     mixHash = StringField(required=False)
     miner = StringField(required=True)
@@ -20,7 +21,7 @@ class Blocks(Document):
     parentHash = StringField(required=True)
     transactions = ListField(null=True)
     nonce = StringField(required=True)
-    hash = StringField(required=True)
+    hash = StringField(required=True, unique=True)
     stateRoot = StringField(required=True)
     gasLimit = IntField(required=True)
     created = DateTimeField(required=True)
@@ -33,12 +34,12 @@ class Blocks(Document):
     }
 
 
-class Transactions(Document):
+class Transactions(DynamicDocument):
     fromAddress = StringField(required=True)
     toAddress = StringField(required=False, null=True)
     input = StringField(required=True)
     blockHash = StringField(required=True)
-    hash = StringField(required=True)
+    hash = StringField(required=True, unique=True)
     nonce = IntField(required=True)
     value = FloatField(required=True)
     transactionIndex = IntField(required=True)
