@@ -17,13 +17,7 @@ threads_count = multiprocessing.cpu_count() * 2
 THREAD_POOL = ThreadPoolExecutor(threads_count)
 
 
-def sync_block_and_txs(web3, block):
-    if Blocks.objects(number=block).count():
-        return
-    try:
-        block_data = web3.eth.getBlock(block)
-    except AttributeError:
-        raise ValueError('block {} does not exist'.format(block))
+def add_block_to_mongo(web3, block_data):
     block = Blocks(**block_data)
     block.created = timestamp_to_utc_datetime(block_data['timestamp'])
     # TODO log exc
@@ -38,10 +32,28 @@ def sync_block_and_txs(web3, block):
         tx.save()
 
 
+def sync_block_and_txs(block, web3=None):
+    if not web3:
+        web3 = RpcServerConnector().get_connection()
+    if isinstance(block, str):
+        if Blocks.objects(hash=block).count():
+            return
+    elif isinstance(block, int):
+        if Blocks.objects(number=block).count():
+            return
+
+    try:
+        block_data = web3.eth.getBlock(block)
+    except AttributeError:
+        raise ValueError('block {} does not exist'.format(block))
+
+    add_block_to_mongo(web3, block_data)
+
+
 async def call_coroutines(sync_blocks):
     loop = asyncio.get_event_loop()
     futures = [
-        loop.run_in_executor(THREAD_POOL, sync_block_and_txs, RpcServerConnector().get_connection(), i)
+        loop.run_in_executor(THREAD_POOL, sync_block_and_txs, i, RpcServerConnector().get_connection())
         for i in sync_blocks]
     await asyncio.wait(futures)
 

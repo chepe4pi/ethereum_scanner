@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'constance',
     'constance.backends.database',
+    'raven.contrib.django.raven_compat',
     # Project
     'app_core',
     'app_sync'
@@ -135,3 +136,12 @@ CONSTANCE_CONFIG = {
     'MONGO_DATABASE_NAME': ('ethereum_scan', 'name of mongo db'),
     'MONGO_TEST_DATABASE_NAME': ('test_db', 'name of mongo test db')
 }
+
+from raven import fetch_git_sha
+from raven.contrib.django.raven_compat.models import client
+
+RAVEN_CONFIG = {
+    'dsn': os.getenv('SENTRY_KEY'),
+}
+
+client.captureException()

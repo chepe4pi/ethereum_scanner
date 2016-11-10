@@ -10,6 +10,6 @@ class RpcServerConnector:
         if config.RPC_SERVER_PROTOCOL == 'IPC':
             return Web3(IPCProvider(ipc_path=config.RPC_SERVER_IPC_PATH))
         elif config.RPC_SERVER_PROTOCOL == 'HTTP':
-            return Web3(RPCProvider(host=config.RPC_SERVER_HOST, port=config.RPC_SERVER_PORT))
+            return Web3(RPCProvider(host=config.RPC_SERVER_HOST, port=config.RPC_SERVER_HTTP_PORT))
         else:
             raise ValueError('wrong or missing RPC_SERVER_PROTOCOL')
