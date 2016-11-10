@@ -3,13 +3,16 @@ import multiprocessing
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
+from constance import config
+from mongoengine.connection import disconnect
+
 from app_core.connectors import RpcServerConnector
 from app_core.utils import timestamp_to_utc_datetime
 from app_sync.mongo_models import Blocks, Transactions
 
 from mongoengine import connect
 
-connect('ethereum_scan')
+
 threads_count = multiprocessing.cpu_count() * 2
 THREAD_POOL = ThreadPoolExecutor(threads_count)
 
@@ -44,6 +47,8 @@ async def call_coroutines(sync_blocks):
 
 
 def sync_blocks(start_block, end_block):
+    connect(config.MONGO_DATABASE_NAME)
+
     loop = asyncio.get_event_loop_policy().new_event_loop()
     asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
@@ -57,6 +62,8 @@ def sync_blocks(start_block, end_block):
 
             sync_position = sync_blocks[-1] + 1
         loop.close()
+
+    disconnect(config.MONGO_DATABASE_NAME)
 
 #        # test sync speed result
         # web3 = RpcServerConnector().get_connection()

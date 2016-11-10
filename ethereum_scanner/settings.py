@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'constance',
     'constance.backends.database',
     # Project
-    'app_core'
+    'app_core',
+    'app_sync'
 ]
 
 MIDDLEWARE = [
@@ -130,4 +131,7 @@ CONSTANCE_CONFIG = {
     'RPC_SERVER_PROTOCOL': ('IPC', 'IPC or HTTP'),
     'RPC_SERVER_HTTP_PORT': ('8545', 'rpc server port'),
     'RPC_SERVER_IPC_PATH': ('/home/che/.ethereum/geth.ipc', 'path to ethereum rpc file'),
+    'SYNC_BLOCKS_POSITION': (0, 'how many block we synced from first one'),
+    'MONGO_DATABASE_NAME': ('ethereum_scan', 'name of mongo db'),
+    'MONGO_TEST_DATABASE_NAME': ('test_db', 'name of mongo test db')
 }
