@@ -2,6 +2,7 @@ import copy
 from unittest import TestCase
 from unittest.mock import patch
 
+import mongoengine
 import pytz
 from constance import config
 from pymongo import MongoClient
@@ -50,7 +51,9 @@ class SyncBlocksAndTxsTestCase(TestCase):
         mock_get_block.return_value = copy.deepcopy(self.test_block_data)
         mock_get_transaction.return_value = copy.deepcopy(self.test_tx_data)
 
-        sync_block_and_txs(1, self.web3)
+        mongoengine.register_connection('test_alias', name=config.MONGO_TEST_DATABASE_NAME)
+
+        sync_block_and_txs(1, self.web3, 'test_alias')
 
         client = MongoClient()
         db = client[config.MONGO_TEST_DATABASE_NAME]
