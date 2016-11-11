@@ -3,21 +3,19 @@ import multiprocessing
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
+import mongoengine
 from constance import config
-from mongoengine.connection import disconnect
+from mongoengine.connection import disconnect, connect
 
 from app_core.connectors import RpcServerConnector
 from app_core.utils import timestamp_to_utc_datetime
 from app_sync.mongo_models import Blocks, Transactions
 
-from mongoengine import connect
-
-
 threads_count = multiprocessing.cpu_count() * 2
 THREAD_POOL = ThreadPoolExecutor(threads_count)
 
 
-def add_block_to_mongo(web3, block_data):
+def add_block_to_mongo(web3, block_data, Blocks, Transactions):
     block = Blocks(**block_data)
     block.created = timestamp_to_utc_datetime(block_data['timestamp'])
     block.save()
@@ -31,6 +29,10 @@ def add_block_to_mongo(web3, block_data):
 
 
 def sync_block_and_txs(block, web3):
+    connection_alias = 'conn_{}'.format(block)
+    connect(config.MONGO_DATABASE_NAME, alias=connection_alias)
+    Blocks._meta['db_alias'] = connection_alias
+    Transactions._meta['db_alias'] = connection_alias
     if Blocks.objects(number=block).count():
         return
     try:
@@ -38,20 +40,21 @@ def sync_block_and_txs(block, web3):
     except AttributeError:
         raise ValueError('block {} does not exist'.format(block))
 
-    add_block_to_mongo(web3, block_data)
+    add_block_to_mongo(web3, block_data, Blocks, Transactions)
+    disconnect(connection_alias)
 
 
 async def call_coroutines(sync_blocks):
     loop = asyncio.get_event_loop()
+    for block in sync_blocks:
+        mongoengine.register_connection('conn_{}'.format(block), name=config.MONGO_DATABASE_NAME)
     futures = [
-        loop.run_in_executor(THREAD_POOL, sync_block_and_txs, i, RpcServerConnector().get_connection())
-        for i in sync_blocks]
+        loop.run_in_executor(THREAD_POOL, sync_block_and_txs, i, RpcServerConnector().get_connection()) for i in
+        sync_blocks]
     await asyncio.wait(futures)
 
 
 def sync_blocks(start_block, end_block):
-    connect(config.MONGO_DATABASE_NAME)
-
     loop = asyncio.get_event_loop_policy().new_event_loop()
     asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
@@ -66,9 +69,9 @@ def sync_blocks(start_block, end_block):
             sync_position = sync_blocks[-1] + 1
         loop.close()
 
-    disconnect(config.MONGO_DATABASE_NAME)
+        # disconnect(config.MONGO_DATABASE_NAME)
 
 #        # test sync speed result
-        # web3 = RpcServerConnector().get_connection()
-        # for block in range(start_block, end_block):
-        #     sync_block_and_txs(web3, block)
+# web3 = RpcServerConnector().get_connection()
+# for block in range(start_block, end_block):
+#     sync_block_and_txs(web3, block)
