@@ -26,8 +26,13 @@ def set_web3_filter_task(self):
         web3 = RpcServerConnector().get_connection()
         last_block = web3.eth.blockNumber
         current_block = config.SYNC_BLOCKS_POSITION
+        connect(config.MONGO_DATABASE_NAME)
+
+        web3 = RpcServerConnector().get_connection()
         while current_block < last_block:
+
             connect(config.MONGO_DATABASE_NAME)
+
             sync_block_and_txs(current_block, web3)
             current_block += 1
             config.SYNC_BLOCKS_POSITION = current_block
