@@ -9,37 +9,37 @@ from mongoengine.connection import disconnect, connect
 
 from app_core.connectors import RpcServerConnector
 from app_core.utils import timestamp_to_utc_datetime
-from app_sync.mongo_models import Blocks, Transactions
+from app_sync.mongo_models import EthBlocks, EthTransactions
 
 threads_count = multiprocessing.cpu_count() * 2
 THREAD_POOL = ThreadPoolExecutor(threads_count)
 
 
-def add_block_to_mongo(web3, block_data, Blocks, Transactions):
-    block = Blocks(**block_data)
+def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
+    block = EthBlocks(**block_data)
     block.created = timestamp_to_utc_datetime(block_data['timestamp'])
     block.save()
     for tx_hash in block.transactions:
         tx_data = web3.eth.getTransaction(tx_hash)
         tx_data['fromAddress'] = tx_data.pop('from')
         tx_data['toAddress'] = tx_data.pop('to')
-        tx = Transactions(**tx_data)
+        tx = EthTransactions(**tx_data)
         tx.block = block.id
         tx.save()
 
 
 def sync_block_and_txs(block_num, web3, connection_alias=None):
     if connection_alias:
-        Blocks._meta['db_alias'] = connection_alias
-        Transactions._meta['db_alias'] = connection_alias
-    if Blocks.objects(number=block_num).count():
+        EthBlocks._meta['db_alias'] = connection_alias
+        EthTransactions._meta['db_alias'] = connection_alias
+    if EthBlocks.objects(number=block_num).count():
         return
     try:
         block_data = web3.eth.getBlock(block_num)
     except AttributeError:
         raise ValueError('block {} does not exist'.format(block_num))
 
-    add_block_to_mongo(web3, block_data, Blocks, Transactions)
+    add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions)
 
 
 async def call_coroutines(sync_blocks, web3s, aliases):
@@ -50,7 +50,7 @@ async def call_coroutines(sync_blocks, web3s, aliases):
     await asyncio.wait(futures)
 
 
-def sync_blocks(start_block, end_block):
+def sync_db_with_rpc_server(start_block, end_block):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()

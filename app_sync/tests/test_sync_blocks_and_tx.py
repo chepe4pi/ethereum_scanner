@@ -11,7 +11,7 @@ from web3.eth import Eth
 from app_core.connectors import RpcServerConnector
 from app_core.tests.utils import set_mongo_test_db
 from app_core.utils import timestamp_to_utc_datetime
-from app_sync.sync_rpc_server import sync_blocks, sync_block_and_txs
+from app_sync.sync_rpc_server import sync_db_with_rpc_server, sync_block_and_txs
 from app_sync.tests.data_for_tests import test_block_data, test_tx_data
 
 
@@ -28,7 +28,7 @@ class SyncBlocksTestCase(TestCase):
         mock_get_block.return_value = copy.deepcopy(self.test_block_data)
         mock_get_transaction.return_value = copy.deepcopy(self.test_tx_data)
 
-        sync_blocks(1, 1)
+        sync_db_with_rpc_server(1, 1)
 
         client = MongoClient()
         db = client[config.MONGO_TEST_DATABASE_NAME]

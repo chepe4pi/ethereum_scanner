@@ -2,14 +2,14 @@ from mongoengine import StringField, IntField, ListField, DateTimeField, ObjectI
     DynamicDocument
 
 
-class Blocks(DynamicDocument):
+class EthBlocks(DynamicDocument):
     totalDifficulty = IntField(required=True)
     mixHash = StringField(required=False)
     miner = StringField(required=True)
     gasUsed = IntField(required=True)
     logsBloom = StringField(required=True)
     sha3Uncles = StringField(required=True)
-    uncles = ListField(null=True)
+    uncles = ListField(required=False)
     extraData = StringField(required=True)
     difficulty = IntField(required=True)
     size = IntField(required=True)
@@ -19,7 +19,7 @@ class Blocks(DynamicDocument):
     receiptRoot = StringField(required=False)
     receiptsRoot = StringField(required=False)
     parentHash = StringField(required=True)
-    transactions = ListField(null=True)
+    transactions = ListField(required=False)
     nonce = StringField(required=True)
     hash = StringField(required=True, unique=True)
     stateRoot = StringField(required=True)
@@ -35,9 +35,9 @@ class Blocks(DynamicDocument):
     }
 
 
-class Transactions(DynamicDocument):
+class EthTransactions(DynamicDocument):
     fromAddress = StringField(required=True)
-    toAddress = StringField(required=False, null=True)
+    toAddress = StringField(required=False)
     input = StringField(required=True)
     blockHash = StringField(required=True)
     hash = StringField(required=True, unique=True)

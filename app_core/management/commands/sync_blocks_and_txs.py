@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from app_core.connectors import RpcServerConnector
-from app_sync.sync_rpc_server import sync_blocks
+from app_sync.sync_rpc_server import sync_db_with_rpc_server
 
 
 class Command(BaseCommand):
@@ -21,6 +21,6 @@ class Command(BaseCommand):
         end_block = options['block-end'][0]
         start_block = options['block-start'][0]
 
-        sync_blocks(start_block, end_block)
+        sync_db_with_rpc_server(start_block, end_block)
 
         self.stdout.write(self.style.SUCCESS('Successfully synced "%s" blocks' % (end_block - start_block + 1)))
