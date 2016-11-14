@@ -42,6 +42,7 @@ class SyncBlocksAndTxsTestCase(TestCase):
         super(SyncBlocksAndTxsTestCase, self).setUp()
         self.test_block_data = test_block_data
         self.test_tx_data = test_tx_data
+        self.web3 = RpcServerConnector().get_connection()
 
     @patch.object(Eth, 'getTransaction')
     @patch.object(Eth, 'getBlock')
