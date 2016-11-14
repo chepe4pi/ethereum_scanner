@@ -2,10 +2,9 @@ import copy
 from unittest import TestCase
 from unittest.mock import patch
 
+import mongoengine
 import pytz
 from constance import config
-from mongoengine import connect
-from mongoengine.connection import disconnect
 from pymongo import MongoClient
 from web3.eth import Eth
 
@@ -43,7 +42,6 @@ class SyncBlocksAndTxsTestCase(TestCase):
         super(SyncBlocksAndTxsTestCase, self).setUp()
         self.test_block_data = test_block_data
         self.test_tx_data = test_tx_data
-        self.web3 = RpcServerConnector().get_connection()
 
     @patch.object(Eth, 'getTransaction')
     @patch.object(Eth, 'getBlock')
@@ -52,11 +50,9 @@ class SyncBlocksAndTxsTestCase(TestCase):
         mock_get_block.return_value = copy.deepcopy(self.test_block_data)
         mock_get_transaction.return_value = copy.deepcopy(self.test_tx_data)
 
-        connect(config.MONGO_DATABASE_NAME)
+        mongoengine.register_connection('test_alias', name=config.MONGO_TEST_DATABASE_NAME)
 
-        sync_block_and_txs(1, self.web3)
-
-        disconnect(config.MONGO_DATABASE_NAME)
+        sync_block_and_txs(1, self.web3, 'test_alias')
 
         client = MongoClient()
         db = client[config.MONGO_TEST_DATABASE_NAME]

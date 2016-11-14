@@ -30,7 +30,8 @@ class Blocks(DynamicDocument):
         'indexes': [
             'number',
             'created',
-        ]
+        ],
+        "db_alias": "default"
     }
 
 
