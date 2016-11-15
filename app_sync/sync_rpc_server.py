@@ -24,7 +24,7 @@ def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
         tx_data['fromAddress'] = tx_data.pop('from')
         tx_data['toAddress'] = tx_data.pop('to')
         tx = EthTransactions(**tx_data)
-        tx.block = block.id
+        tx.block = block
         tx.save()
 
 

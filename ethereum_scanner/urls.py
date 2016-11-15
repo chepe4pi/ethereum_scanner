@@ -16,6 +16,15 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
-urlpatterns = [
+from rest_framework_mongoengine.routers import SimpleRouter
+
+from app_tx_api.views import GetTxListView
+
+router = SimpleRouter()
+router.register(r'txs', GetTxListView, base_name='txs')
+
+urlpatterns = router.urls
+
+urlpatterns += [
     url(r'^admin/', admin.site.urls),
 ]

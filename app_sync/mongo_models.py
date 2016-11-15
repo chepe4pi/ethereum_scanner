@@ -1,5 +1,5 @@
 from mongoengine import StringField, IntField, ListField, DateTimeField, ObjectIdField, FloatField, \
-    DynamicDocument
+    DynamicDocument, ReferenceField
 
 
 class EthBlocks(DynamicDocument):
@@ -31,7 +31,6 @@ class EthBlocks(DynamicDocument):
             'number',
             'created',
         ],
-        "db_alias": "default"
     }
 
 
@@ -47,7 +46,7 @@ class EthTransactions(DynamicDocument):
     gas = IntField(required=True)
     gasPrice = IntField(required=True)
     blockNumber = IntField(required=True)
-    block = ObjectIdField(required=True)
+    block = ReferenceField(EthBlocks)
 
     meta = {
         'indexes': [

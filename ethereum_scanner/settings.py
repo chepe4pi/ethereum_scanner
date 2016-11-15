@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     # Project
     'app_core',
-    'app_sync'
+    'app_sync',
+    'app_tx_api',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,9 @@ DATABASES = {
         'PASSWORD': 'qqqwww121',
         'HOST': '127.0.0.1',
         'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_ethereumscanner',
+        },
     },
 }
 
