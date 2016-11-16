@@ -169,9 +169,64 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                     TestEthTransactions.objects.filter(timestamp__gte=timestamp), many=True).data)
 
 
+class GetAllTxsPaginationTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITestCase):
+    def test_get_all_limit_offset_txs(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key, 'offset': 1, 'limit': 2})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(len(response.data), 2)
+                self.assertEqual(response.data, TxSerializer([TestEthTransactions.objects.all()[1],
+                                                              TestEthTransactions.objects.all()[2]], many=True).data)
+
+    def test_get_all_limit_offset_two_txs(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key, 'offset': 2, 'limit': 2})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(len(response.data), 2)
+                self.assertEqual(response.data, TxSerializer([TestEthTransactions.objects.all()[2],
+                                                              TestEthTransactions.objects.all()[3]], many=True).data)
+
+    def test_get_all_limit_no_offset_txs(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key, 'limit': 3})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(len(response.data), 3)
+                self.assertEqual(response.data, TxSerializer([TestEthTransactions.objects.all()[0],
+                                                              TestEthTransactions.objects.all()[1],
+                                                              TestEthTransactions.objects.all()[2]], many=True).data)
+
+    def test_get_all_no_limit_offset_txs(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key, 'offset': 1})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(len(response.data), 3)
+                self.assertEqual(response.data, TxSerializer([TestEthTransactions.objects.all()[1],
+                                                              TestEthTransactions.objects.all()[2],
+                                                              TestEthTransactions.objects.all()[3]], many=True).data)
+
+
 class CreateApiKeyAuthTestCase(AuthorizeForTestsMixin, APITestCase):
     def test_create_api_key_authorized(self):
-
         response = self.client.post(reverse('api-key-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -187,7 +242,6 @@ class CreateApiKeyAuthTestCase(AuthorizeForTestsMixin, APITestCase):
 
 class CreateApiKeyUnAuthTestCase(APITestCase):
     def test_create_api_key_unauthorized(self):
-
         response = self.client.post(reverse('api-key-list'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

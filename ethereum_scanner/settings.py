@@ -143,7 +143,8 @@ CONSTANCE_CONFIG = {
     'SYNC_BLOCKS_POSITION': (0, 'how many block we synced from first one'),
     'MONGO_DATABASE_NAME': (MONGO_DATABASE_NAME, 'name of mongo db'),
     'MONGO_TEST_DATABASE_NAME': ('test_db', 'name of mongo test db'),
-    'TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS': (10, 'in seconds')
+    'TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS': (10, 'in seconds'),
+    'MAX_ROWS_IN_API_RESPONSE': (1000, 'how namy rows max we can receive in api request')
 }
 
 RAVEN_CONFIG = {
