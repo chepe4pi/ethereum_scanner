@@ -224,6 +224,22 @@ class GetAllTxsPaginationTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTest
                                                               TestEthTransactions.objects.all()[2],
                                                               TestEthTransactions.objects.all()[3]], many=True).data)
 
+    def test_get_all_system_limit_txs(self):
+        system_pagination = config.MAX_ROWS_IN_API_RESPONSE
+        config.MAX_ROWS_IN_API_RESPONSE = 2
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key, 'offset': 1})
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(len(response.data), 2)
+                self.assertEqual(response.data, TxSerializer([TestEthTransactions.objects.all()[1],
+                                                              TestEthTransactions.objects.all()[2]], many=True).data)
+        config.MAX_ROWS_IN_API_RESPONSE = system_pagination
+
 
 class CreateApiKeyAuthTestCase(AuthorizeForTestsMixin, APITestCase):
     def test_create_api_key_authorized(self):
