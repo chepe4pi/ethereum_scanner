@@ -23,20 +23,24 @@ class CreateMongoTxsAndBlocksMixin:
         super(CreateMongoTxsAndBlocksMixin, self).setUp()
         blocks = []
         mongoengine.register_connection(config.MONGO_TEST_DATABASE_NAME, name=config.MONGO_TEST_DATABASE_NAME)
-        with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
-            for test_block_data in test_block_data_list:
-                block = TestEthBlocks(**test_block_data)
-                block.created = timestamp_to_utc_datetime(test_block_data['timestamp'])
-                block.save()
-                blocks.append(block)
         with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
-            for test_tx_data in test_tx_data_list:
-                data_to_create = copy.deepcopy(test_tx_data)
-                data_to_create['fromAddress'] = test_tx_data.get('from')
-                data_to_create['toAddress'] = test_tx_data.get('to')
-                tx = TestEthTransactions(**data_to_create)
-                tx.block = blocks[0]
-                tx.save()
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                for test_block_data in test_block_data_list:
+                    block = TestEthBlocks(**test_block_data)
+                    block.save()
+                    blocks.append(block)
+                for index, test_tx_data in enumerate(test_tx_data_list):
+                    data_to_create = copy.deepcopy(test_tx_data)
+                    data_to_create['fromAddress'] = test_tx_data.get('from')
+                    data_to_create['toAddress'] = test_tx_data.get('to')
+                    tx = TestEthTransactions(**data_to_create)
+                    if index + 1 <= len(test_block_data_list):
+                        tx.block = blocks[index]
+                        tx.timestamp = blocks[index]['timestamp']
+                    else:
+                        tx.block = blocks[-1]
+                        tx.timestamp = blocks[-1]['timestamp']
+                    tx.save()
 
     def tearDown(self):
         super().tearDown()

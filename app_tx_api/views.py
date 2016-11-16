@@ -11,4 +11,6 @@ class GetTxListView(FilterViewMixin, ReadOnlyModelViewSet):
     serializer_class = TxSerializer
     queryset = EthTransactions.objects.all()
     lookup_field = 'hash'
-    filter_fields = ('hash', 'fromAddress', 'toAddress')
+    filter_fields = ('hash', 'fromAddress', 'toAddress',
+                     'blockNumber', 'blockNumber__gt', 'blockNumber__lt', 'blockNumber__gte', 'blockNumber__lte',
+                     'timestamp', 'timestamp__gt', 'timestamp__lt', 'timestamp__gte', 'timestamp__lte')

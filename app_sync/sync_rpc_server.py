@@ -17,14 +17,13 @@ THREAD_POOL = ThreadPoolExecutor(threads_count)
 
 def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
     block = EthBlocks(**block_data)
-    block.created = timestamp_to_utc_datetime(block_data['timestamp'])
     block.save()
     for tx_hash in block.transactions:
         tx_data = web3.eth.getTransaction(tx_hash)
         tx_data['fromAddress'] = tx_data.pop('from')
         tx_data['toAddress'] = tx_data.pop('to')
+        tx_data['timestamp'] = block_data['timestamp']
         tx = EthTransactions(**tx_data)
-        tx.block = block
         tx.save()
 
 

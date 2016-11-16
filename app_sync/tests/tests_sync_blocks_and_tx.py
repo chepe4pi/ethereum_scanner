@@ -63,11 +63,9 @@ class SyncBlocksAndTxsTestCase(TestCase):
 
         block = db.eth_blocks.find_one()
         self.assertEqual(self.test_block_data['hash'], block['hash'])
-        self.assertEqual(timestamp_to_utc_datetime(self.test_block_data['timestamp']),
-                         block['created'].replace(tzinfo=pytz.utc))
 
         tx = db.eth_transactions.find_one()
         self.assertEqual(self.test_tx_data['hash'], tx['hash'])
         self.assertEqual(self.test_tx_data['to'], tx['toAddress'])
         self.assertEqual(self.test_tx_data['from'], tx['fromAddress'])
-        self.assertEqual(block['_id'], tx['block'])
+        self.assertEqual(block['timestamp'], tx['timestamp'])

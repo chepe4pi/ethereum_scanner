@@ -1,5 +1,4 @@
-from mongoengine import StringField, IntField, ListField, DateTimeField, ObjectIdField, FloatField, \
-    DynamicDocument, ReferenceField
+from mongoengine import StringField, IntField, ListField, FloatField, DynamicDocument
 
 
 class EthBlocks(DynamicDocument):
@@ -24,12 +23,11 @@ class EthBlocks(DynamicDocument):
     hash = StringField(required=True, unique=True)
     stateRoot = StringField(required=True)
     gasLimit = IntField(required=True)
-    created = DateTimeField(required=True)
 
     meta = {
         'indexes': [
             'number',
-            'created',
+            'timestamp',
         ],
     }
 
@@ -46,14 +44,15 @@ class EthTransactions(DynamicDocument):
     gas = IntField(required=True)
     gasPrice = IntField(required=True)
     blockNumber = IntField(required=True)
-    block = ReferenceField(EthBlocks)
+    timestamp = IntField(required=True)
 
     meta = {
         'indexes': [
             'fromAddress',
             'toAddress',
             'hash',
-            'block',
-            'value',
+            'blockNumber',
+            'timestamp'
+
         ]
     }
