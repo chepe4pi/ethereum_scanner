@@ -1,14 +1,8 @@
-from constance import config
-from mongoengine import connect
 from rest_framework_mongoengine.viewsets import ReadOnlyModelViewSet
 
 from app_core.mixins_for_view import FilterViewMixin
 from app_sync.mongo_models import EthTransactions
 from app_tx_api.mongo_serializers import TxSerializer
-
-
-# TODO I have to find other way
-connect(config.MONGO_DATABASE_NAME)
 
 
 class GetTxListView(FilterViewMixin, ReadOnlyModelViewSet):
