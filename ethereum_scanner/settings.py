@@ -142,11 +142,6 @@ CONSTANCE_CONFIG = {
     'TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS': (10, 'in seconds')
 }
 
-from raven import fetch_git_sha
-from raven.contrib.django.raven_compat.models import client
-
 RAVEN_CONFIG = {
     'dsn': os.getenv('SENTRY_KEY'),
 }
-
-client.captureException()

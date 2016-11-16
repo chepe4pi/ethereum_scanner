@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/chepe4pi/ethereum_scanner.svg?branch=master)](https://travis-ci.org/chepe4pi/ethereum_scanner)
