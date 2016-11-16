@@ -22,4 +22,4 @@ before_script:
 script: ./manage.py test
 
 notifications:
-    email: false
+    email: true
