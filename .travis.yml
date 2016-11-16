@@ -19,6 +19,7 @@ install: "pip install -r requirements.txt"
 before_script:
   - createuser ethereumscanner -d -l -w
   - createdb ethereumscanner -O ethereumscanner
+  - ./manage.py makemigrations
   - ./manage.py migrate
 
 script: ./manage.py test
