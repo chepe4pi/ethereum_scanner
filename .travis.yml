@@ -1,0 +1,23 @@
+language: python
+
+services:
+  - mongodb
+  - postgresql
+
+sudo: false
+
+matrix:
+    fast_finish: true
+
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+install: "pip install -r requirements.txt"
+
+script: ./manage.py test
+
+notifications:
+    email: false
