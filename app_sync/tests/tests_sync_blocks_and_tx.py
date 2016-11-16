@@ -1,18 +1,18 @@
 import copy
-from unittest import TestCase
 from unittest.mock import patch
 
 import mongoengine
 import pytz
 from constance import config
+from django.test import TestCase
 from pymongo import MongoClient
 from web3.eth import Eth
 
 from app_core.connectors import RpcServerConnector
+from app_core.tests.tx_data_for_tests import test_block_data, test_tx_data
 from app_core.tests.utils import set_mongo_test_db
 from app_core.utils import timestamp_to_utc_datetime
 from app_sync.sync_rpc_server import sync_db_with_rpc_server, sync_block_and_txs
-from app_sync.tests.data_for_tests import test_block_data, test_tx_data
 
 
 class SyncBlocksTestCase(TestCase):
@@ -33,8 +33,8 @@ class SyncBlocksTestCase(TestCase):
         client = MongoClient()
         db = client[config.MONGO_TEST_DATABASE_NAME]
 
-        self.assertEqual(db.blocks.count(), 1)
-        self.assertEqual(db.transactions.count(), 1)
+        self.assertEqual(db.eth_blocks.count(), 1)
+        self.assertEqual(db.eth_transactions.count(), 1)
 
 
 class SyncBlocksAndTxsTestCase(TestCase):
@@ -58,15 +58,15 @@ class SyncBlocksAndTxsTestCase(TestCase):
         client = MongoClient()
         db = client[config.MONGO_TEST_DATABASE_NAME]
 
-        self.assertEqual(db.blocks.count(), 1)
-        self.assertEqual(db.transactions.count(), 1)
+        self.assertEqual(db.eth_blocks.count(), 1)
+        self.assertEqual(db.eth_transactions.count(), 1)
 
-        block = db.blocks.find_one()
+        block = db.eth_blocks.find_one()
         self.assertEqual(self.test_block_data['hash'], block['hash'])
         self.assertEqual(timestamp_to_utc_datetime(self.test_block_data['timestamp']),
                          block['created'].replace(tzinfo=pytz.utc))
 
-        tx = db.transactions.find_one()
+        tx = db.eth_transactions.find_one()
         self.assertEqual(self.test_tx_data['hash'], tx['hash'])
         self.assertEqual(self.test_tx_data['to'], tx['toAddress'])
         self.assertEqual(self.test_tx_data['from'], tx['fromAddress'])
