@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     # Project
     'app_core',
+    'app_auth',
     'app_sync',
     'app_tx_api',
 ]

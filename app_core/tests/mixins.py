@@ -5,6 +5,7 @@ from constance import config
 from mongoengine.context_managers import switch_db
 from pymongo import MongoClient
 
+from app_auth.tests.factories import ApiKeyFactory
 from app_core.tests.factories import UserFactory
 from app_core.tests.tx_data_for_tests import test_block_data_list, test_tx_data_list
 from app_core.utils import timestamp_to_utc_datetime
@@ -21,10 +22,12 @@ class AuthorizeForTestsMixin:
 class CreateMongoTxsAndBlocksMixin:
     def setUp(self):
         super(CreateMongoTxsAndBlocksMixin, self).setUp()
+        self.api_key = ApiKeyFactory()
         blocks = []
         mongoengine.register_connection(config.MONGO_TEST_DATABASE_NAME, name=config.MONGO_TEST_DATABASE_NAME)
         with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
             with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                client = MongoClient()
                 for test_block_data in test_block_data_list:
                     block = TestEthBlocks(**test_block_data)
                     block.save()

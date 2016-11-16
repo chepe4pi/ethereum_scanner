@@ -9,6 +9,27 @@ from app_sync.mongo_models import EthTransactions, EthBlocks
 from app_tx_api.mongo_serializers import TxSerializer
 
 
+class GetTxsNotApiKeyTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITestCase):
+    def test_get_all_txs_not_api_key(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'))
+
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_all_txs_fake_api_key(self):
+        with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
+            with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
+                self.assertEqual(TestEthTransactions.objects.count(), 4)
+                self.assertEqual(TestEthBlocks.objects.count(), 3)
+
+                response = self.client.get(reverse('txs-list'), {'api_key': '321'})
+                self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITestCase):
     def test_get_all_txs(self):
         with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
@@ -16,7 +37,7 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'))
+                response = self.client.get(reverse('txs-list'), {'api_key': self.api_key.key})
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertEqual(len(response.data), 4)
@@ -29,7 +50,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'fromAddress': from_address})
+                response = self.client.get(reverse('txs-list'),
+                                           {'fromAddress': from_address, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 3)
@@ -44,7 +66,7 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'toAddress': to_address})
+                response = self.client.get(reverse('txs-list'), {'toAddress': to_address, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 2)
@@ -59,7 +81,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'toAddress': to_address, 'fromAddress': from_address})
+                response = self.client.get(reverse('txs-list'), {'toAddress': to_address, 'fromAddress': from_address,
+                                                                 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 1)
@@ -74,7 +97,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'toAddress': to_address, 'fromAddress': from_address})
+                response = self.client.get(reverse('txs-list'), {'toAddress': to_address, 'fromAddress': from_address,
+                                                                 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 0)
@@ -88,7 +112,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'blockNumber': block_number})
+                response = self.client.get(reverse('txs-list'),
+                                           {'blockNumber': block_number, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 2)
@@ -102,7 +127,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'blockNumber__gte': block_number})
+                response = self.client.get(reverse('txs-list'),
+                                           {'blockNumber__gte': block_number, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 3)
@@ -116,7 +142,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'blockNumber__lt': block_number})
+                response = self.client.get(reverse('txs-list'),
+                                           {'blockNumber__lt': block_number, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 2)
@@ -130,7 +157,8 @@ class GetTxsTestCase(CreateMongoTxsAndBlocksMixin, AuthorizeForTestsMixin, APITe
                 self.assertEqual(TestEthTransactions.objects.count(), 4)
                 self.assertEqual(TestEthBlocks.objects.count(), 3)
 
-                response = self.client.get(reverse('txs-list'), {'timestamp__gte': timestamp})
+                response = self.client.get(reverse('txs-list'),
+                                           {'timestamp__gte': timestamp, 'api_key': self.api_key.key})
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
 
                 self.assertEqual(len(response.data), 3)

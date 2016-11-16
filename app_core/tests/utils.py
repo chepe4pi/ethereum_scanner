@@ -2,7 +2,7 @@ import django
 from constance import config
 from pymongo import MongoClient
 
-django.setup()
+# django.setup()
 
 
 def set_mongo_test_db(func):

@@ -8,7 +8,6 @@ from constance import config
 from mongoengine.connection import disconnect, connect
 
 from app_core.connectors import RpcServerConnector
-from app_core.utils import timestamp_to_utc_datetime
 from app_sync.mongo_models import EthBlocks, EthTransactions
 
 threads_count = multiprocessing.cpu_count() * 2
