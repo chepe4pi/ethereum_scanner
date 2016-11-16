@@ -10,8 +10,8 @@ matrix:
     fast_finish: true
 
 python:
-#  - "3.3"
-#  - "3.4"
+  - "3.3"
+  - "3.4"
   - "3.5"
 
 install: "pip install -r requirements.txt"
@@ -19,7 +19,6 @@ install: "pip install -r requirements.txt"
 before_script:
   - createuser ethereumscanner -d -l -w
   - createdb ethereumscanner -O ethereumscanner
-  - ./manage.py makemigrations
   - ./manage.py migrate
 
 script: ./manage.py test
