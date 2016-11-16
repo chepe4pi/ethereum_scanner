@@ -17,9 +17,10 @@ python:
 install: "pip install -r requirements.txt"
 
 before_script:
-  - psql -c 'create role ethereumscanner with login;' -U postgres
-  - psql -c 'alter role ethereumscanner with password "qqqwww121";' -U postgres
-  - psql -c 'create database ethereumscanner owner ethereumscanner;' -U postgres
+  - createuser -d -l -W 'qqqwww121'
+#  - psql -c 'create role ethereumscanner with login createdb;' -U postgres
+#  - psql -c 'alter role ethereumscanner with password "qqqwww121";' -U postgres
+#  - psql -c 'create database ethereumscanner owner ethereumscanner;' -U postgres
 
 script: ./manage.py test
 
