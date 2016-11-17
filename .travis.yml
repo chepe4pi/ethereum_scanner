@@ -23,3 +23,18 @@ script: ./manage.py test
 
 notifications:
     email: true
+#
+#addons:
+#  sonarqube: true
+
+cache:
+  directories:
+    – $HOME/.m2
+    – $HOME/.sonar/cache
+
+env:
+  global:
+    - secure: a_very_long_hash_string_here
+jdk: oraclejdk8
+language: java
+script: mvn clean install sonar:sonar -Dsonar.host.url=https://sonarqube.com -Dsonar.login=$SONAR_TOKEN
