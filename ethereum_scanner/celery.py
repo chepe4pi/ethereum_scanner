@@ -23,21 +23,23 @@ app.autodiscover_tasks()
 @app.task(bind=True)
 def set_web3_filter_task(self):
     while True:
-        web3 = RpcServerConnector().get_connection()
-        last_block = web3.eth.blockNumber
-        current_block = config.SYNC_BLOCKS_POSITION
+        sync_blocks_from_position_to_end()
+        time.sleep(config.TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS)
+
+
+def sync_blocks_from_position_to_end():
+    web3 = RpcServerConnector().get_connection()
+    last_block = web3.eth.blockNumber
+    current_block = config.SYNC_BLOCKS_POSITION
+    connect(config.MONGO_DATABASE_NAME)
+
+    while current_block < last_block:
         connect(config.MONGO_DATABASE_NAME)
 
-        web3 = RpcServerConnector().get_connection()
-        while current_block < last_block:
-
-            connect(config.MONGO_DATABASE_NAME)
-
-            sync_block_and_txs(current_block, web3)
-            current_block += 1
-            config.SYNC_BLOCKS_POSITION = current_block
-        disconnect(config.MONGO_DATABASE_NAME)
-        time.sleep(config.TIME_TO_SLEEP_BEFORE_CHECK_BLOCKS)
+        sync_block_and_txs(current_block, web3)
+        current_block += 1
+        config.SYNC_BLOCKS_POSITION = current_block
+    disconnect(config.MONGO_DATABASE_NAME)
 
 
 if __name__ == '__main__':
