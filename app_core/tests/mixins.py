@@ -8,7 +8,6 @@ from pymongo import MongoClient
 from app_auth.tests.factories import ApiKeyFactory
 from app_core.tests.factories import UserFactory
 from app_core.tests.tx_data_for_tests import test_block_data_list, test_tx_data_list
-from app_core.utils import timestamp_to_utc_datetime
 from app_sync.mongo_models import EthBlocks, EthTransactions
 
 
