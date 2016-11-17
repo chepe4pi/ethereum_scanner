@@ -10,7 +10,7 @@ from mongoengine.connection import disconnect, connect
 from app_core.connectors import RpcServerConnector
 from app_sync.mongo_models import EthBlocks, EthTransactions
 
-forks_count = multiprocessing.cpu_count() * 4
+forks_count = multiprocessing.cpu_count() * 8
 
 
 def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
@@ -53,7 +53,6 @@ def sync_db_with_rpc_server(start_block, end_block):
 
         web3 = RpcServerConnector().get_connection()
         web3s.append(web3)
-    web3 = RpcServerConnector().get_connection()
 
     with ProcessPoolExecutor(forks_count) as executor:
         while sync_position <= end_block:
@@ -62,7 +61,7 @@ def sync_db_with_rpc_server(start_block, end_block):
                 end_block + 1 if sync_position + forks_count > end_block else sync_position + forks_count)
             sync_blocks = [i for i in range(sync_position, block_end_range)]
             for block in sync_blocks:
-                future = executor.submit(sync_block_and_txs, block, web3,
+                future = executor.submit(sync_block_and_txs, block, web3s[sync_blocks.index(block)],
                                          aliases[sync_blocks.index(block)])
                 futures.add(future)
             completed = wait_for(futures)
