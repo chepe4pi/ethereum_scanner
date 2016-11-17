@@ -30,7 +30,7 @@ class SyncBlocksTestCase(TestCase):
 
         sync_db_with_rpc_server(1, 1)
 
-        client = MongoClient()
+        client = MongoClient(connect=False)
         db = client[config.MONGO_TEST_DATABASE_NAME]
 
         self.assertEqual(db.eth_blocks.count(), 1)
@@ -55,7 +55,7 @@ class SyncBlocksAndTxsTestCase(TestCase):
 
         sync_block_and_txs(1, self.web3, 'test_alias')
 
-        client = MongoClient()
+        client = MongoClient(connect=False)
         db = client[config.MONGO_TEST_DATABASE_NAME]
 
         self.assertEqual(db.eth_blocks.count(), 1)

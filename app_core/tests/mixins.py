@@ -27,7 +27,7 @@ class CreateMongoTxsAndBlocksMixin:
         mongoengine.register_connection(config.MONGO_TEST_DATABASE_NAME, name=config.MONGO_TEST_DATABASE_NAME)
         with switch_db(EthTransactions, config.MONGO_TEST_DATABASE_NAME) as TestEthTransactions:
             with switch_db(EthBlocks, config.MONGO_TEST_DATABASE_NAME) as TestEthBlocks:
-                client = MongoClient()
+                client = MongoClient(connect=False)
                 for test_block_data in test_block_data_list:
                     block = TestEthBlocks(**test_block_data)
                     block.save()
@@ -47,6 +47,6 @@ class CreateMongoTxsAndBlocksMixin:
 
     def tearDown(self):
         super().tearDown()
-        client = MongoClient()
+        client = MongoClient(connect=False)
         client[config.MONGO_TEST_DATABASE_NAME].eth_blocks.remove()
         client[config.MONGO_TEST_DATABASE_NAME].eth_transactions.remove()
