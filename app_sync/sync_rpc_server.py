@@ -1,7 +1,6 @@
 import concurrent
 import multiprocessing
 
-import asyncio
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 import mongoengine
@@ -11,8 +10,7 @@ from mongoengine.connection import disconnect, connect
 from app_core.connectors import RpcServerConnector
 from app_sync.mongo_models import EthBlocks, EthTransactions
 
-threads_count = multiprocessing.cpu_count() * 2
-# THREAD_POOL = ThreadPoolExecutor(threads_count)
+forks_count = multiprocessing.cpu_count() * 4
 
 
 def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
@@ -41,24 +39,13 @@ def sync_block_and_txs(block_num, web3, connection_alias=None):
     add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions)
 
 
-# async def call_coroutines(sync_blocks, web3s, aliases):
-#     loop = asyncio.get_event_loop()
-#     futures = [
-#         loop.run_in_executor(THREAD_POOL, sync_block_and_txs, i, web3s[sync_blocks.index(i)],
-#                              aliases[sync_blocks.index(i)]) for i in sync_blocks]
-#     await asyncio.wait(futures)
-
-
 def sync_db_with_rpc_server(start_block, end_block):
-    # loop = asyncio.get_event_loop_policy().new_event_loop()
-    # asyncio.set_event_loop(loop)
-    # loop = asyncio.get_event_loop()
-
     sync_position = start_block
 
     aliases = []
     web3s = []
-    for thread, num in enumerate(range(0, threads_count)):
+
+    for thread, num in enumerate(range(0, forks_count)):
         alias = 'conn_{}'.format(num)
         aliases.append(alias)
         mongoengine.register_connection(alias, name=config.MONGO_DATABASE_NAME)
@@ -66,35 +53,26 @@ def sync_db_with_rpc_server(start_block, end_block):
 
         web3 = RpcServerConnector().get_connection()
         web3s.append(web3)
+    web3 = RpcServerConnector().get_connection()
 
-    # with THREAD_POOL:
-    #     while sync_position <= end_block:
-    #         block_end_range = (
-    #         end_block + 1 if sync_position + threads_count > end_block else sync_position + threads_count)
-    #         sync_blocks = [i for i in range(sync_position, block_end_range)]
-    #
-    #         loop.run_until_complete(call_coroutines(sync_blocks, web3s, aliases))
-    #
-    #         sync_position = sync_blocks[-1] + 1
-    #     loop.close()
-
-    with ProcessPoolExecutor(threads_count) as executor:
+    with ProcessPoolExecutor(forks_count) as executor:
         while sync_position <= end_block:
             futures = set()
             block_end_range = (
-                end_block + 1 if sync_position + threads_count > end_block else sync_position + threads_count)
+                end_block + 1 if sync_position + forks_count > end_block else sync_position + forks_count)
             sync_blocks = [i for i in range(sync_position, block_end_range)]
             for block in sync_blocks:
-                future = executor.submit(sync_block_and_txs, block, web3s[sync_blocks.index(block)],
+                future = executor.submit(sync_block_and_txs, block, web3,
                                          aliases[sync_blocks.index(block)])
                 futures.add(future)
             completed = wait_for(futures)
+            sync_position = sync_blocks[-1] + 1
 
             if not completed:
                 executor.shutdown()
 
     for alias in aliases:
-        disconnect(alias)  # # test sync speed result
+        disconnect(alias)
 
 
 def wait_for(futures):
@@ -110,8 +88,7 @@ def wait_for(futures):
             future.cancel()
     return not canceled
 
-
-
+# # test sync speed result
 # web3 = RpcServerConnector().get_connection()
 # for block in range(start_block, end_block):
 #     sync_block_and_txs(web3, block)
