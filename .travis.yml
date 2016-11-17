@@ -23,7 +23,8 @@ before_script:
 
 script:
   - ./manage.py test
-  - coverage run --omit=home manage.py test
+  - ls -la
+  - coverage run --omit=/home manage.py test
 
 
 notifications:
