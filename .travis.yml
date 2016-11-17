@@ -23,3 +23,11 @@ script: ./manage.py test
 
 notifications:
     email: true
+
+addons:
+  sonarqube: true
+env:
+  global:
+    - secure: "NYcQys3qi/vkeK8VztoLcQYEkbO1drijs3VvNxTnJ52JUwigD66EIVtxBZRGTReha0Z23N5adGpwjSAzu4Cv+BDI9CWTjkzyqEWyV7wn3jZ7MEvHtWhzZPWjvSF7sWwZfWbE1yq16VebXjhh6De6EMgcaXqvk1SwfhRNbTgiSI972wZOvkufo5/EdT2VAS8eQuBAX5SSY7yvGqJ+QjD7pR0Z+aOGgFZvHxtxt0Lq0L3JuR+aYLgpnggMtr149n2HTeoNF+Ip2AXjT6LzyERaNKWVGb2eq7O1R1OX7HoiuQJsev02IGyP7gVCp5FIFMtAZFVpyrq3ODlkRSkJgsk1DQXlBJFTGCht0NXVYC/3JGusjuEoRkVjZ3HTnjYIVz6oTt5mAw+V5P7VWGZBfq9h8zZi+arSa/ru1SN7USvOOepazgnGraQ9hfgi/1QGZmvUWXFT4HcnpoAnoiJc1y+LIfVFOcIS5J/o31FBfE5sXSHTm0Z948ubIie+sgKxdoDnk4qUEBBZflRj8EWDYtNzW7R8PIPkc8dP5ivgqQNp6M1VV34bRtLmr0NM8eQSjMo+EQDFlxEgmhOqk6JdEpjerFC/iQpFYxAAtZ6IbQ7VzkfeOlCLJ6NF633HaVzEhT0E94l6lBj1t9tbsssnM3GdY6fy4M6Km+LQ3qjjQMmpVrY="
+script:
+  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
