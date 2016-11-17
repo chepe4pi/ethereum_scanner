@@ -1,2 +1,2 @@
 [![Build Status](https://travis-ci.org/chepe4pi/ethereum_scanner.svg?branch=master)](https://travis-ci.org/chepe4pi/ethereum_scanner)
-[![Coverage Status](https://coveralls.io/repos/github/chepe4pi/ethereum_scanner/badge.svg?branch=coveralls)](https://coveralls.io/github/chepe4pi/ethereum_scanner?branch=coveralls)
+[![Coverage Status](https://coveralls.io/repos/github/chepe4pi/ethereum_scanner/badge.svg?branch=master)](https://coveralls.io/github/chepe4pi/ethereum_scanner?branch=master)
