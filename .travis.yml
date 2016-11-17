@@ -23,7 +23,7 @@ before_script:
 
 script:
   - ./manage.py test
-  - coverage run --source=ethereum_scanner manage.py test
+  - coverage run manage.py test
 
 
 notifications:
