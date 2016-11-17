@@ -13,10 +13,6 @@ class Command(BaseCommand):
 
     # TODO logger - synced
     def handle(self, *args, **options):
-        web3 = RpcServerConnector().get_connection()
-        if not web3.isConnected():
-            raise CommandError('Unable to make %s' % web3.currentProvider)
-        del web3
 
         end_block = options['block-end'][0]
         start_block = options['block-start'][0]
