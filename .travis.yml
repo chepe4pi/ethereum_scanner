@@ -4,6 +4,7 @@ services:
   - mongodb
   - postgresql
 
+jdk: oraclejdk8
 sudo: false
 
 matrix:
