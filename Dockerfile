@@ -30,4 +30,4 @@ RUN apt-get update \
 
 COPY . $PROJECT_DIR
 
-CMD cd $PROJECT_DIR && gunicorn --bind $GUNICORN_BIND --log-level debug --access-logfile - --error-logfile - ethereum_scanner.wsgi
+CMD cd $PROJECT_DIR && gunicorn --bind $GUNICORN_BIND --log-level debug ethereum_scanner.wsgi
