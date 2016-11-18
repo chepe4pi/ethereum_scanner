@@ -24,7 +24,7 @@ RUN apt-get update \
             python3-pip \
             mongodb-org \
             redis-server \
-    && pip3 install -r $PROJECT_DIR/requirements.txt
+    && pip3 install -r $PROJECT_DIR/requirements.txt \
     && pip3 install gunicorn
 
 
