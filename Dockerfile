@@ -30,5 +30,4 @@ RUN apt-get update \
 
 COPY . $PROJECT_DIR
 
-CMD gunicorn --bind $GUNICORN_BIND --log-level debug --access-logfile - --error-logfile - \
-             -c dynamis/gunicorn.conf etherscaner.wsgi
+CMD gunicorn --bind $GUNICORN_BIND --log-level debug --access-logfile - --error-logfile - ethereum_scanner.wsgi
