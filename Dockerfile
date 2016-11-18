@@ -21,9 +21,10 @@ RUN apt-get update \
             postgresql-server-dev-9.5 \
             build-essential \
             python3-dev \
+            python3-pip \
             mongodb-org \
             redis-server \
-    && pip install -r $PROJECT_DIR/requirements.txt
+    && pip3 install -r $PROJECT_DIR/requirements.txt
 
 
 COPY . $PROJECT_DIR
