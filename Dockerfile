@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 
 ENV PROJECT_DIR=/var/www/etherscaner \
-    GUNICORN_BIND=0.0.0.0:8000 \
+    GUNICORN_BIND=127.0.0.1:8000 \
     DJANGO_SECRET_KEY='some_secret_key' \
     DJANGO_DEBUG='True' \
     DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend \
