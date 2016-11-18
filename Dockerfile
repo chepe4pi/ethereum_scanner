@@ -31,4 +31,4 @@ RUN apt-get update \
 COPY . $PROJECT_DIR
 
 EXPOSE 8000
-CMD cd $PROJECT_DIR && sudo service mongod start && gunicorn --bind $GUNICORN_BIND --log-level debug ethereum_scanner.wsgi
+CMD cd $PROJECT_DIR && service mongod start && gunicorn --bind $GUNICORN_BIND --log-level debug ethereum_scanner.wsgi
