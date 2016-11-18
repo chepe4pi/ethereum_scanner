@@ -14,12 +14,12 @@ ENV PROJECT_DIR=/var/www/etherscaner \
     DJANGO_SITE_DOMAIN="dev"
 
 COPY requirements.txt $PROJECT_DIR/requirements.txt
+RUN echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update \
     && apt-get install -y \
             postgresql-server-dev-9.5 \
             build-essential \
             python3-dev \
-            python3-build-essential \
             mongodb-org \
             redis-server \
     && pip install -r $PROJECT_DIR/requirements.txt
