@@ -11,7 +11,8 @@ Usage:
 ``` ./manage.py sync_blocks_and_txs 1 1800000``` (blocks rate)
 - for start real-time tx and blocks monitoring you have to use this one:
 ``` ./manage.py start_block_monitor``` (it will fell database in real-time)
- 
+ - to check block position of real-time syncing you can check this url - 
+  http://127.0.0.1:8000/admin/constance/config/
  
  PS: It's configuration for tests and development. 
  For production environment you have to use stronger solution.
