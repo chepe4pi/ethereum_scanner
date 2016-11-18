@@ -44,4 +44,3 @@ def sync_blocks_from_position_to_end():
 
 if __name__ == '__main__':
     app.start()
-    set_web3_filter_task.delay()
