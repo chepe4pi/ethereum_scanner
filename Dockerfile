@@ -31,3 +31,5 @@ RUN apt-get update \
 COPY . $PROJECT_DIR
 
 CMD gunicorn --bind $GUNICORN_BIND --log-level debug --access-logfile - --error-logfile - ethereum_scanner.wsgi
+CMD sudo netstat -nlp | grep 8000
+CMD echo $?
