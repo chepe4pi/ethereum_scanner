@@ -16,3 +16,5 @@ Usage:
  
  PS: It's configuration for tests and development. 
  For production environment you have to use stronger solution.
+ 
+ PPS: Celery worker in docker image is not included yet. Ethereum rpc server is also not included, it's better to put Ethereum rpc server on same container and chose IPC-communication with server (in http://127.0.0.1:8000/admin/constance/config/) or you can setup this server in other container and use HTTP-communication (it's slower for sync)
