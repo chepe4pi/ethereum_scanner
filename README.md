@@ -13,6 +13,8 @@ Usage:
 ``` ./manage.py start_block_monitor``` (it will fell database in real-time)
  - to check block position of real-time syncing you can check this url - 
   http://127.0.0.1:8000/admin/constance/config/
+ - for capture exceptions in background task add celery secret key to system env variable
+ ``` SENTRY_KEY="my_sentry_secret_key" ```
  
  PS: It's configuration for tests and development. 
  For production environment you have to use stronger solution.
