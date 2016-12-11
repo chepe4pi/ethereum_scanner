@@ -33,3 +33,4 @@ wheel==0.29.0
 factory-boy==2.7.0
 django-ipware==1.1.6
 coverage==4.2
+Pillow==3.4.2

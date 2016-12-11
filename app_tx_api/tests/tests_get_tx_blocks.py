@@ -7,7 +7,11 @@ from rest_framework.test import APITestCase
 from app_auth.models import ApiKey
 from app_auth.models import ClientInfo
 from app_auth.serializers import ApiKeySerializer
+from app_core.tests.factories import UserFactory
 from app_core.tests.mixins import AuthorizeForTestsMixin, CreateMongoTxsAndBlocksMixin
+from app_follows.models import EthAccountInfo, Follow
+from app_follows.serializers import EthAccountInfoSerializer, FollowSerializer
+from app_follows.tests.factories import EthAccountInfoFactory, FollowFactory
 from app_sync.mongo_models import EthTransactions, EthBlocks
 from app_tx_api.mongo_serializers import TxSerializer
 
@@ -269,3 +273,85 @@ class CreateApiKeyUnAuthTestCase(APITestCase):
         self.assertEqual(api_key.client_info, client_info)
         self.assertEqual(api_key.is_active, True)
         self.assertEqual(response.data, ApiKeySerializer(api_key).data)
+
+
+class GetAddressInfoTestCase(AuthorizeForTestsMixin, APITestCase):
+    def test_get_all(self):
+        EthAccountInfoFactory(address='0x42e6723a0c884e922240e56d7b618bec96f35801', avatar=None)
+        EthAccountInfoFactory(address='0x42e6723a0c884e922240e56d7b618bec96f35802', avatar=None)
+        response = self.client.get(reverse('account-info-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        all_account_info = EthAccountInfo.objects.all()
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data, EthAccountInfoSerializer(all_account_info, many=True).data)
+
+    def test_get_by_address(self):
+        eth_account_info = EthAccountInfoFactory(address='0x42e6723a0c884e922240e56d7b618bec96f35803', avatar=None)
+        response = self.client.get(reverse('account-info-detail', args=(eth_account_info.address,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        all_account_info = EthAccountInfo.objects.get()
+        self.assertEqual(response.data, EthAccountInfoSerializer(all_account_info).data)
+
+
+class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
+    def setUp(self):
+        super(FollowViewSet, self).setUp()
+        self.user_2 = UserFactory(username='other_user')
+        self.address_1 = '0x42e6723a0c884e922240e56d7b618bec96f35801'
+        self.address_2 = '0x42e6723a0c884e922240e56d7b618bec96f35802'
+        self.address_3 = '0x42e6723a0c884e922240e56d7b618bec96f35803'
+        self.follow_1 = FollowFactory(user=self.user, address=self.address_1)
+        self.follow_2 = FollowFactory(user=self.user, address=self.address_2)
+        self.follow_other_user = FollowFactory(user=self.user_2, address=self.address_3)
+        self.url_detail = reverse('follows-detail', args=(self.address_1,))
+        self.url_detail_other = reverse('follows-detail', args=(self.address_3,))
+        self.url_list = reverse('follows-list')
+
+    def test_get_my_follow_unauthorised(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_my_follow(self):
+        response = self.client.get(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, FollowSerializer(self.follow_1).data)
+
+    def test_get_all_follows(self):
+        response = self.client.get(self.url_list)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data, FollowSerializer(Follow.objects.filter(user=self.user), many=True).data)
+
+    def test_get_other_follow(self):
+        response = self.client.get(self.url_detail_other)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_other_follow(self):
+        response = self.client.put(self.url_detail_other, data={'name': 'some name'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_other_follow(self):
+        response = self.client.delete(self.url_detail_other)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_my_follow(self):
+        response = self.client.patch(self.url_detail, data={'name': 'some name 2'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        follow = Follow.objects.get(pk=self.follow_1.pk)
+        self.assertEqual(follow.name, 'some name 2')
+
+    def test_delete_my_follow(self):
+        response = self.client.delete(self.url_detail)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        follow = Follow.objects.filter(pk=self.follow_1.pk).exists()
+        self.assertFalse(follow)
+
+    def test_create_follow(self):
+        response = self.client.patch(self.url_detail, data={'name': 'super_name',
+                                                            'address': 'super_address'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        follow = Follow.objects.get(name='super_name', address='super_address')
+        self.assertEqual(follow.user, self.user)
