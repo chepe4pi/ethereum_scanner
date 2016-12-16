@@ -24,8 +24,6 @@ SECRET_KEY = '#zc89&g+$$+!!vbwe=g$9-fn7burtj8s%*d5iy$^g2wlh6fhes'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -153,3 +151,4 @@ RAVEN_CONFIG = {
 }
 
 MEDIA_ROOT = 'media/'
+ALLOWED_HOSTS = '*'
