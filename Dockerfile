@@ -46,4 +46,4 @@ CMD  cd $PROJECT_DIR &&\
      /etc/init.d/postgresql start &&\
      python3 ./manage.py migrate &&\
      gunicorn --bind $GUNICORN_BIND  --log-level debug ethereum_scanner.wsgi #&\
-#     celery --app ethereum_scanner worker -l info
+#     celery worker --app ethereum_scanner -l info
