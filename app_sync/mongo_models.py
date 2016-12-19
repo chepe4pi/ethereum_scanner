@@ -1,8 +1,8 @@
-from mongoengine import StringField, IntField, ListField, FloatField, DynamicDocument
+from mongoengine import StringField, IntField, ListField, FloatField, DynamicDocument, LongField
 
 
 class EthBlocks(DynamicDocument):
-    totalDifficulty = IntField(required=True)
+    # totalDifficulty = LongField(required=True)
     mixHash = StringField(required=False)
     miner = StringField(required=True)
     gasUsed = IntField(required=True)

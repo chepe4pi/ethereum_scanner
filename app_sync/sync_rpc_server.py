@@ -14,6 +14,10 @@ forks_count = multiprocessing.cpu_count() * 8
 
 
 def add_block_and_txs_to_mongo(web3, block_data, EthBlocks, EthTransactions):
+
+    # FIXME cheap hack
+    block_data.pop('totalDifficulty')
+
     block = EthBlocks(**block_data)
     block.save()
     for tx_hash in block.transactions:
