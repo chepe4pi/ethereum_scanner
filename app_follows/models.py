@@ -16,7 +16,7 @@ class EthAccountInfo(models.Model):
 
 class Follow(models.Model):
     user = models.ForeignKey(User, related_name='follows')
-    address = models.CharField(max_length=63)
+    address = models.CharField(max_length=63, db_index=True)
     name = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
