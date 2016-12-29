@@ -35,9 +35,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party
     'rest_framework',
+    'rest_framework.authtoken',
     'constance',
     'constance.backends.database',
     'raven.contrib.django.raven_compat',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.twitter',
     # Project
     'app_core',
     'app_auth',
@@ -152,3 +160,5 @@ RAVEN_CONFIG = {
 
 MEDIA_ROOT = 'media/'
 ALLOWED_HOSTS = '*'
+
+SITE_ID = 1

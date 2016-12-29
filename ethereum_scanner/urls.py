@@ -13,12 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 
 from rest_framework_mongoengine.routers import SimpleRouter
 
-from app_auth.views import ApiKeyViewSet
+from app_auth.views import ApiKeyViewSet, TwitterLogin
 from app_follows.views import EthAccountInfoViewSet, FollowViewSet
 from app_timeline.views import TimeLineViewSet
 from app_tx_api.views import GetTxListView
@@ -34,4 +34,7 @@ urlpatterns = router.urls
 
 urlpatterns += [
     url(r'^admin/', admin.site.urls),
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/twitter/$', TwitterLogin.as_view(), name='twitter_login'),
+    url(r'^oauth/', include('allauth.urls')),
 ]
