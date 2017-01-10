@@ -58,12 +58,18 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app_core.middleware.DisableCSRF',
 ]
 
+# MIDDLEWARE_CLASSES = (
+#     'app_core.middleware.DisableCSRF',
+# )
+
+CSRF_COOKIE_SECURE = True
 ROOT_URLCONF = 'ethereum_scanner.urls'
 
 TEMPLATES = [
