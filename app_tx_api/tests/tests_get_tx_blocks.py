@@ -349,9 +349,18 @@ class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
         follow = Follow.objects.filter(pk=self.follow_1.pk).exists()
         self.assertFalse(follow)
 
-    def test_create_follow(self):
+    def test_update_follow_two(self):
         response = self.client.patch(self.url_detail, data={'name': 'super_name',
                                                             'address': 'super_address'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        follow = Follow.objects.get(name='super_name', address='super_address')
+        self.assertEqual(follow.user, self.user)
+
+    def test_create_follow(self):
+        self.assertFalse(Follow.objects.filter(name='super_name', address='super_address').exists())
+        response = self.client.post(self.url_list, data={'name': 'super_name',
+                                                         'address': 'super_address'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Follow.objects.filter(name='super_name', address='super_address').exists())
         follow = Follow.objects.get(name='super_name', address='super_address')
         self.assertEqual(follow.user, self.user)

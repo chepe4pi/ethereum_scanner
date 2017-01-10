@@ -16,7 +16,7 @@ class FollowViewSet(ModelViewSet):
     lookup_field = 'address'
 
     def create(self, request, *args, **kwargs):
-        request.data.update({"user": request.user})
+        request.data.update({"user": request.user.pk})
         return super().create(request, *args, **kwargs)
 
 
