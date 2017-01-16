@@ -364,3 +364,10 @@ class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
         self.assertTrue(Follow.objects.filter(name='super_name', address='super_address').exists())
         follow = Follow.objects.get(name='super_name', address='super_address')
         self.assertEqual(follow.user, self.user)
+
+    def test_create_follow_same_address(self):
+        FollowFactory(address='super_address', user=self.user)
+        response = self.client.post(self.url_list, data={'name': 'super_name',
+                                                         'address': 'super_address'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'non_field_errors': ['The fields user, address must make a unique set.']})
