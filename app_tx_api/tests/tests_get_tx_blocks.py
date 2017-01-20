@@ -351,23 +351,47 @@ class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
 
     def test_update_follow_two(self):
         response = self.client.patch(self.url_detail, data={'name': 'super_name',
-                                                            'address': 'super_address'})
+                                                            'address': '0x2a65aca4d5fc5b5c859090a6c34d164135398226'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        follow = Follow.objects.get(name='super_name', address='super_address')
+        follow = Follow.objects.get(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398226')
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow(self):
-        self.assertFalse(Follow.objects.filter(name='super_name', address='super_address').exists())
+        self.assertFalse(Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
         response = self.client.post(self.url_list, data={'name': 'super_name',
-                                                         'address': 'super_address'})
+                                                         'address': '0x2a65aca4d5fc5b5c859090a6c34d164135398228'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Follow.objects.filter(name='super_name', address='super_address').exists())
-        follow = Follow.objects.get(name='super_name', address='super_address')
+        self.assertTrue(Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        follow = Follow.objects.get(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228')
+        self.assertEqual(follow.user, self.user)
+
+    def test_create_follow_2(self):
+        self.assertFalse(Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
+        response = self.client.post(self.url_list, data={'name': 'super_name',
+                                                         'address': '0X2A65ACA4D5FC5B5C859090A6C34D164135398228'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
+        follow = Follow.objects.get(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228')
+        self.assertEqual(follow.user, self.user)
+
+    def test_create_follow_3(self):
+        self.assertFalse(Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        response = self.client.post(self.url_list, data={'name': 'super_name',
+                                                         'address': '2a65aca4d5fc5b5c859090a6c34d164135398228'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        follow = Follow.objects.get(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228')
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow_same_address(self):
-        FollowFactory(address='super_address', user=self.user)
+        FollowFactory(address='0x2a65aca4d5fc5b5c859090a6c34d164135398226', user=self.user)
         response = self.client.post(self.url_list, data={'name': 'super_name',
-                                                         'address': 'super_address'})
+                                                         'address': '0x2a65aca4d5fc5b5c859090a6c34d164135398226'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data, {'non_field_errors': ['The fields user, address must make a unique set.']})
+
+    def test_create_follow_wrong_address(self):
+        response = self.client.post(self.url_list, data={'name': 'super_name',
+                                                         'address': 'test'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {'address': ['Address is not valid']})
