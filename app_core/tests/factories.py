@@ -8,5 +8,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('username',)
 
     username = 'test_username'
+    first_name = 'Mr.'
+    last_name = 'Minister'
     email = 'test@email.example.com'
     password = '123'

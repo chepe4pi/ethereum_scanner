@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from constance import config
 from django.urls import reverse
 from mongoengine.context_managers import switch_db
@@ -6,7 +8,8 @@ from rest_framework.test import APITestCase
 
 from app_auth.models import ApiKey
 from app_auth.models import ClientInfo
-from app_auth.serializers import ApiKeySerializer
+from app_auth.serializers import ApiKeySerializer, UserInfoSerializer
+from app_auth.tests.factories import SocialAccountFactory
 from app_core.tests.factories import UserFactory
 from app_core.tests.mixins import AuthorizeForTestsMixin, CreateMongoTxsAndBlocksMixin
 from app_follows.models import EthAccountInfo, Follow
@@ -275,6 +278,19 @@ class CreateApiKeyUnAuthTestCase(APITestCase):
         self.assertEqual(response.data, ApiKeySerializer(api_key).data)
 
 
+class GetUserInfoTestCase(AuthorizeForTestsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.social_account = SocialAccountFactory(user=self.user)
+
+    def test_get_info(self):
+        print(reverse('user-info-list'))
+        response = self.client.get(reverse('user-info-list'))
+        self.assertEqual(response.data, UserInfoSerializer(self.user).data)
+        self.assertEqual(response.data, OrderedDict([('first_name', 'Mr.'), ('last_name', 'Minister'), (
+        'profile_image_url', 'http://pbs.twimg.com/profile_images/771255744922394624/ikSvtpF7.jpg')]))
+
+
 class GetAddressInfoTestCase(AuthorizeForTestsMixin, APITestCase):
     def test_get_all(self):
         EthAccountInfoFactory(address='0x42e6723a0c884e922240e56d7b618bec96f35801', avatar=None)
@@ -357,29 +373,35 @@ class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow(self):
-        self.assertFalse(Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        self.assertFalse(
+            Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
         response = self.client.post(self.url_list, data={'name': 'super_name',
                                                          'address': '0x2a65aca4d5fc5b5c859090a6c34d164135398228'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        self.assertTrue(
+            Follow.objects.filter(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
         follow = Follow.objects.get(name='super_name', address='0x2a65aca4d5fc5b5c859090a6c34d164135398228')
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow_2(self):
-        self.assertFalse(Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
+        self.assertFalse(
+            Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
         response = self.client.post(self.url_list, data={'name': 'super_name',
                                                          'address': '0X2A65ACA4D5FC5B5C859090A6C34D164135398228'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
+        self.assertTrue(
+            Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
         follow = Follow.objects.get(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228')
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow_3(self):
-        self.assertFalse(Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        self.assertFalse(
+            Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
         response = self.client.post(self.url_list, data={'name': 'super_name',
                                                          'address': '2a65aca4d5fc5b5c859090a6c34d164135398228'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
+        self.assertTrue(
+            Follow.objects.filter(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228').exists())
         follow = Follow.objects.get(name='super_name', address='2a65aca4d5fc5b5c859090a6c34d164135398228')
         self.assertEqual(follow.user, self.user)
 
