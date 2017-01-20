@@ -7,14 +7,6 @@ from rest_framework.viewsets import GenericViewSet
 from app_auth.models import ApiKey, ClientInfo
 from app_auth.serializers import ApiKeySerializer
 from ipware.ip import get_real_ip, get_ip
-from allauth.socialaccount.providers.twitter.views import TwitterOAuthAdapter
-from rest_auth.views import LoginView
-from rest_auth.social_serializers import TwitterLoginSerializer
-
-
-class TwitterLogin(LoginView):
-    serializer_class = TwitterLoginSerializer
-    adapter_class = TwitterOAuthAdapter
 
 
 class ApiKeyViewSet(GenericViewSet,
