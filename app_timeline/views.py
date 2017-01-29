@@ -19,7 +19,9 @@ class TimeLineViewSet(FilterPaginatorViewMixin, mixins.ListModelMixin, GenericVi
         for follow in users_folows_list:
             q_list.append(Q(fromAddress=follow.address, timestamp__gte=follow.created.timestamp()))
             q_list.append(Q(toAddress=follow.address, timestamp__gte=follow.created.timestamp()))
-        query = q_list.pop()
-        for item in q_list:
-            query |= item
-        return EthTransactions.objects.filter(query)
+        if q_list:
+            query = q_list.pop()
+            for item in q_list:
+                query |= item
+            return EthTransactions.objects.filter(query)
+        return EthTransactions.objects.none()
