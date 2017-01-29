@@ -284,7 +284,6 @@ class GetUserInfoTestCase(AuthorizeForTestsMixin, APITestCase):
         self.social_account = SocialAccountFactory(user=self.user)
 
     def test_get_info(self):
-        print(reverse('user-info-list'))
         response = self.client.get(reverse('user-info-list'))
         self.assertEqual(response.data, UserInfoSerializer(self.user).data)
         self.assertEqual(response.data, OrderedDict([('first_name', 'Mr.'), ('last_name', 'Minister'), (

@@ -20,4 +20,5 @@ class UserInfoSerializer(ModelSerializer):
     profile_image_url = SerializerMethodField()
 
     def get_profile_image_url(self, instance):
-        return SocialAccount.objects.get(user=instance).get_avatar_url()
+        if SocialAccount.objects.filter(user=instance).exists():
+            return SocialAccount.objects.get(user=instance).get_avatar_url()
