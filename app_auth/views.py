@@ -32,11 +32,11 @@ class ApiKeyViewSet(GenericViewSet,
 class UserInfoViewSet(GenericViewSet,
                       mixins.ListModelMixin):
     permission_classes = (IsAuthenticated,)
-    queryset = User.objects.all()
+    queryset = User.objects.none()
     serializer_class = UserInfoSerializer
 
-    def get_object(self):
-        return self.request.user
+    def get_queryset(self):
+        return User.objects.filter(pk=self.request.user.id)
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
