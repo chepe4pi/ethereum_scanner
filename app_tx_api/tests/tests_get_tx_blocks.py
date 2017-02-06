@@ -388,9 +388,10 @@ class FollowViewSet(AuthorizeForTestsMixin, APITestCase):
         response = self.client.post(self.url_list, data={'name': 'super_name',
                                                          'address': '0X2A65ACA4D5FC5B5C859090A6C34D164135398228'})
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        lower_address = '0X2A65ACA4D5FC5B5C859090A6C34D164135398228'.lower()
         self.assertTrue(
-            Follow.objects.filter(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228').exists())
-        follow = Follow.objects.get(name='super_name', address='0X2A65ACA4D5FC5B5C859090A6C34D164135398228')
+            Follow.objects.filter(name='super_name', address=lower_address).exists())
+        follow = Follow.objects.get(name='super_name', address=lower_address)
         self.assertEqual(follow.user, self.user)
 
     def test_create_follow_3(self):

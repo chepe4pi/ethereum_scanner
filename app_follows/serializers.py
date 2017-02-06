@@ -8,7 +8,7 @@ from app_follows.models import Follow, EthAccountInfo
 class FollowSerializer(ModelSerializer):
     def validate_address(self, value):
         if len(value.lstrip('0x').lstrip('0X')) == 40:
-            return value
+            return value.lower()
         else:
             raise ValidationError("Address is not valid")
 
